@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Flash message custom styles */
+.flash-wrapper {
+    max-width: 80rem;
+    margin: 1rem auto 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.flash-box {
+    border: 1px solid;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-size: 0.875rem;
+}
+
+.flash-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #86efac;
+}
+
+.flash-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fca5a5;
+}
