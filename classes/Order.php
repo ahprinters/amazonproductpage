@@ -189,4 +189,30 @@ class Order
     {
         return 'ORD-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
     }
+
+    public function updateStatus($orderId, $status)
+{
+    $allowedStatuses = [
+        'pending',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled'
+    ];
+
+    if (!in_array($status, $allowedStatuses)) {
+        throw new Exception("Invalid order status.");
+    }
+
+    $stmt = $this->conn->prepare("
+        UPDATE orders
+        SET order_status = ?
+        WHERE id = ?
+        LIMIT 1
+    ");
+
+    $stmt->bind_param("si", $status, $orderId);
+
+    return $stmt->execute();
+}
 }
