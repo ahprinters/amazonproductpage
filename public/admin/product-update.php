@@ -78,11 +78,11 @@ try {
         throw new Exception("Product title is required.");
     }
 
-    if ($slug === '') {
-        throw new Exception("Product slug is required.");
-    }
+    $slug = $productModel->makeSlug($slug);
 
-    $slug = strtolower($slug);
+    if ($slug === '') {
+        throw new Exception("Product slug is invalid.");
+    }
 
     if ($productModel->slugExists($slug, $productId)) {
         throw new Exception("This product slug already exists. Please use another slug.");

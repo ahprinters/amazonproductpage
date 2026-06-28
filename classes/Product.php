@@ -317,4 +317,16 @@ public function getProductsPaginated($search = '', $status = '', $limit = 10, $o
 
         return $result->num_rows > 0;
     }
+    public function makeSlug($text)
+    {
+        $text = strtolower(trim($text));
+
+        $text = preg_replace('/[^a-z0-9\s-]/', '', $text);
+
+        $text = preg_replace('/[\s-]+/', '-', $text);
+
+        $text = trim($text, '-');
+
+        return $text;
+    }
 }

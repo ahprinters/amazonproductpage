@@ -62,14 +62,14 @@ try {
     if ($title === '') {
         throw new Exception("Product title is required.");
     }
+    
+    $productModel = new Product($conn);
+    $slug = $productModel->makeSlug($slug);
 
     if ($slug === '') {
         throw new Exception("Product slug is required.");
     }
-    $slug = strtolower($slug);
-
-    $productModel = new Product($conn);
-
+ 
     if ($productModel->slugExists($slug)) {
         throw new Exception("This product slug already exists. Please use another slug.");
     }

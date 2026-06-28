@@ -73,6 +73,7 @@ if (!$product) {
                     <input
                         type="text"
                         name="title"
+                        id="productTitle"
                         required
                         value="<?= htmlspecialchars($product['title']) ?>"
                         class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -85,6 +86,7 @@ if (!$product) {
                     <input
                         type="text"
                         name="slug"
+                        id="productSlug"
                         required
                         value="<?= htmlspecialchars($product['slug']) ?>"
                         class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -326,5 +328,25 @@ if (!$product) {
     </aside>
 
 </form>
+
+<script>
+    const titleInput = document.getElementById('productTitle');
+    const slugInput = document.getElementById('productSlug');
+
+    function makeSlug(text) {
+        return text
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    if (titleInput && slugInput) {
+        titleInput.addEventListener('input', function () {
+            slugInput.value = makeSlug(titleInput.value);
+        });
+    }
+</script>
 
 <?php include __DIR__ . '/../../includes/admin-footer.php'; ?>
