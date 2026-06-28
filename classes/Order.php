@@ -215,4 +215,39 @@ class Order
 
     return $stmt->execute();
 }
+
+public function getDashboardStats()
+{
+    $stats = [
+        'total_orders' => 0,
+        'pending_orders' => 0,
+        'processing_orders' => 0,
+        'delivered_orders' => 0,
+        'total_revenue' => 0
+    ];
+
+    $stmt = $this->conn->prepare("
+        SELECT 
+            COUNT(*) AS total_orders,
+            SUM(CASE WHEN order_status = 'pending' THEN 1 ELSE 0 END) AS pending_orders,
+            SUM(CASE WHEN order_status = 'processing' THEN 1 ELSE 0 END) AS processing_orders,
+            SUM(CASE WHEN order_status = 'delivered' THEN 1 ELSE 0 END) AS delivered_orders,
+            SUM(total_amount) AS total_revenue
+        FROM orders
+    ");
+
+    $stmt->execute();
+
+    $result = $stmt->get_result()->fetch_assoc();
+
+    if ($result) {
+        $stats['total_orders'] = (int)($result['total_orders'] ?? 0);
+        $stats['pending_orders'] = (int)($result['pending_orders'] ?? 0);
+        $stats['processing_orders'] = (int)($result['processing_orders'] ?? 0);
+        $stats['delivered_orders'] = (int)($result['delivered_orders'] ?? 0);
+        $stats['total_revenue'] = (float)($result['total_revenue'] ?? 0);
+    }
+
+    return $stats;
+}
 }

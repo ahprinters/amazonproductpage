@@ -1,5 +1,5 @@
 {
-  "name": "amazonproductpage",
+  "name": "amazon",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -12,5 +12,14 @@
   "dependencies": {
     "@tailwindcss/cli": "^4.3.1",
     "tailwindcss": "^4.3.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahprinters/amazon.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/ahprinters/amazon/issues"
+  },
+  "homepage": "https://github.com/ahprinters/amazon#readme"
 }
