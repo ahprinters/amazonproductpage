@@ -245,4 +245,18 @@ class Variant
 
         return $stmt->execute();
     }
+
+    public function createColor($colorName, $colorCode)
+    {
+        $stmt = $this->conn->prepare("
+            INSERT INTO product_colors
+            (color_name, color_code)
+            VALUES
+            (?, ?)
+        ");
+
+        $stmt->bind_param("ss", $colorName, $colorCode);
+
+        return $stmt->execute();
+    }
 }

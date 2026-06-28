@@ -32,8 +32,7 @@ $admin = $auth->admin();
 
 </div>
 
-<form action="product-store.php" method="POST" class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-
+<form action="product-store.php" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-12 gap-6">
     <section class="xl:col-span-8 space-y-6">
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -280,15 +279,15 @@ $admin = $auth->admin();
                         Thumbnail Filename
                     </label>
 
-                    <input
-                        type="text"
-                        name="thumbnail"
-                        placeholder="product-1.jpg"
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    >
+                <input
+                    type="file"
+                    name="thumbnail"
+                    accept="image/*"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                >
 
                     <p class="text-xs text-slate-500 mt-2">
-                        Put image inside assets/images folder first.
+                        Image will be uploaded to assets/images/products folder.
                     </p>
                 </div>
 

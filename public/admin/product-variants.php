@@ -91,6 +91,7 @@ $colors = $variantModel->getAllColors();
                                 <th class="px-6 py-4 text-right font-semibold">Price</th>
                                 <th class="px-6 py-4 text-left font-semibold">Stock</th>
                                 <th class="px-6 py-4 text-left font-semibold">Default</th>
+                                <th class="px-6 py-4 text-right font-semibold">Action</th>
                             </tr>
                         </thead>
 
@@ -167,6 +168,12 @@ $colors = $variantModel->getAllColors();
                                             <span class="text-slate-400 text-xs">No</span>
                                         <?php endif; ?>
                                     </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <a href="variant-edit.php?product_id=<?= (int)$product['id'] ?>&id=<?= (int)$variant['id'] ?>"
+                                        class="inline-flex items-center rounded-lg bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-xs font-semibold">
+                                            Edit
+                                        </a>
+                                    </td>
 
                                 </tr>
 
@@ -185,7 +192,7 @@ $colors = $variantModel->getAllColors();
 
     <aside class="xl:col-span-5">
 
-        <form action="variant-store.php" method="POST" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden sticky top-20">
+        <form action="variant-store.php" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden sticky top-20">
 
             <input type="hidden" name="product_id" value="<?= (int)$product['id'] ?>">
 
@@ -242,15 +249,13 @@ $colors = $variantModel->getAllColors();
                     </label>
 
                     <input
-                        type="text"
-                        name="image"
-                        placeholder="product-1.jpg"
+                        type="file"
+                        name="image/*"
                         class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     >
 
                     <p class="text-xs text-slate-500 mt-2">
-                        Put image inside assets/images folder first.
-                    </p>
+                        Leave empty if you want to use product thumbnail.                    </p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

@@ -15,11 +15,60 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+function uploadProductThumbnailForUpdate($file, $oldThumbnail = '')
+{
+    if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return $oldThumbnail;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception("Image upload failed.");
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+    if (!in_array($file['type'], $allowedTypes)) {
+        throw new Exception("Only JPG, PNG, WEBP and GIF images are allowed.");
+    }
+
+    $maxSize = 2 * 1024 * 1024;
+
+    if ($file['size'] > $maxSize) {
+        throw new Exception("Image size must be less than 2MB.");
+    }
+
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+    $fileName = 'product-' . time() . '-' . rand(1000, 9999) . '.' . strtolower($extension);
+
+    $uploadDir = __DIR__ . '/../../assets/images/products/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $destination = $uploadDir . $fileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new Exception("Failed to save uploaded image.");
+    }
+
+    return 'products/' . $fileName;
+}
+
 $productId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 try {
     if ($productId <= 0) {
         throw new Exception("Invalid product ID.");
+    }
+
+    $productModel = new Product($conn);
+
+    $product = $productModel->findById($productId);
+
+    if (!$product) {
+        throw new Exception("Product not found.");
     }
 
     $title = trim($_POST['title'] ?? '');
@@ -33,9 +82,20 @@ try {
         throw new Exception("Product slug is required.");
     }
 
+    $slug = strtolower($slug);
+
+    if ($productModel->slugExists($slug, $productId)) {
+        throw new Exception("This product slug already exists. Please use another slug.");
+    }
+
+    $thumbnail = uploadProductThumbnailForUpdate(
+        $_FILES['thumbnail'] ?? null,
+        $product['thumbnail'] ?? ''
+    );
+
     $data = [
         'title' => $title,
-        'slug' => strtolower($slug),
+        'slug' => $slug,
         'price' => (float)($_POST['price'] ?? 0),
         'old_price' => (float)($_POST['old_price'] ?? 0),
         'sale_price' => (float)($_POST['sale_price'] ?? ($_POST['price'] ?? 0)),
@@ -48,8 +108,13 @@ try {
         'stock' => (int)($_POST['stock'] ?? 0),
         'rating' => (float)($_POST['rating'] ?? 0),
         'review_count' => (int)($_POST['review_count'] ?? 0),
-        'thumbnail' => trim($_POST['thumbnail'] ?? '')
+        'thumbnail' => $thumbnail,
+        'status' -> $_POST['status']?? 'active'
     ];
+
+    if (!in_array($data['status'], ['active', 'inactive'])) {
+    throw new Exception("Invalid product status.");
+    }
 
     if ($data['price'] <= 0) {
         throw new Exception("Product price must be greater than 0.");
@@ -57,14 +122,6 @@ try {
 
     if ($data['stock'] < 0) {
         throw new Exception("Stock cannot be negative.");
-    }
-
-    $productModel = new Product($conn);
-
-    $product = $productModel->findById($productId);
-
-    if (!$product) {
-        throw new Exception("Product not found.");
     }
 
     $productModel->updateProduct($productId, $data);

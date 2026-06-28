@@ -50,7 +50,7 @@ if (!$product) {
 
 </div>
 
-<form action="product-update.php" method="POST" class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+<form action="product-update.php" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
     <input type="hidden" name="id" value="<?= (int)$product['id'] ?>">
 
@@ -263,14 +263,55 @@ if (!$product) {
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Thumbnail Filename</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Current Thumbnail
+                    </label>
+
+                    <?php if (!empty($product['thumbnail'])): ?>
+                        <img
+                            src="../../assets/images/<?= htmlspecialchars($product['thumbnail']) ?>"
+                            alt="<?= htmlspecialchars($product['title']) ?>"
+                            class="w-28 h-28 rounded-xl object-cover border border-slate-200 mb-3"
+                        >
+                    <?php else: ?>
+                        <div class="w-28 h-28 rounded-xl bg-slate-100 flex items-center justify-center text-3xl mb-3">
+                            📦
+                        </div>
+                    <?php endif; ?>
 
                     <input
-                        type="text"
+                        type="file"
                         name="thumbnail"
-                        value="<?= htmlspecialchars($product['thumbnail'] ?? '') ?>"
+                        accept="image/*"
                         class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     >
+
+                    <p class="text-xs text-slate-500 mt-2">
+                        Leave empty if you do not want to change the current image.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Product Status
+                    </label>
+
+                    <select
+                        name="status"
+                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    >
+                        <option value="active" <?= ($product['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>
+                            Active
+                        </option>
+
+                        <option value="inactive" <?= ($product['status'] ?? 'active') === 'inactive' ? 'selected' : '' ?>>
+                            Inactive
+                        </option>
+                    </select>
+
+                    <p class="text-xs text-slate-500 mt-2">
+                        Inactive products will not appear on the frontend product page.
+                    </p>
                 </div>
 
                 <button type="submit"

@@ -16,10 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-function uploadVariantImage($file)
+function uploadVariantImageForUpdate($file, $oldImage = '')
 {
     if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
-        return '';
+        return $oldImage;
     }
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -59,10 +59,11 @@ function uploadVariantImage($file)
 }
 
 $productId = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
+$variantId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 try {
-    if ($productId <= 0) {
-        throw new Exception("Invalid product ID.");
+    if ($productId <= 0 || $variantId <= 0) {
+        throw new Exception("Invalid product or variant ID.");
     }
 
     $productModel = new Product($conn);
@@ -70,6 +71,13 @@ try {
 
     if (!$product) {
         throw new Exception("Product not found.");
+    }
+
+    $variantModel = new Variant($conn);
+    $variant = $variantModel->findById($variantId);
+
+    if (!$variant || (int)$variant['product_id'] !== $productId) {
+        throw new Exception("Variant not found for this product.");
     }
 
     $colorId = isset($_POST['color_id']) ? (int)$_POST['color_id'] : 0;
@@ -95,7 +103,10 @@ try {
         throw new Exception("Stock cannot be negative.");
     }
 
-    $variantImage = uploadVariantImage($_FILES['image'] ?? null);
+    $variantImage = uploadVariantImageForUpdate(
+        $_FILES['image'] ?? null,
+        $variant['image'] ?? ''
+    );
 
     $data = [
         'product_id' => $productId,
@@ -110,10 +121,9 @@ try {
         'status' => $_POST['status'] ?? 'active'
     ];
 
-    $variantModel = new Variant($conn);
-    $variantModel->createVariant($data);
+    $variantModel->updateVariant($variantId, $data);
 
-    Flash::set('success', 'Product variant created successfully.');
+    Flash::set('success', 'Variant updated successfully.');
 
     header("Location: product-variants.php?product_id=" . $productId);
     exit;
@@ -121,6 +131,6 @@ try {
 } catch (Exception $e) {
     Flash::set('error', $e->getMessage());
 
-    header("Location: product-variants.php?product_id=" . $productId);
+    header("Location: variant-edit.php?product_id=" . $productId . "&id=" . $variantId);
     exit;
 }

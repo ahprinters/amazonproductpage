@@ -33,9 +33,15 @@ function adminMenuItemClass($active)
         </a>
 
         <a href="products.php"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition <?= adminMenuItemClass(in_array($currentPage, ['products.php', 'product-create.php', 'product-edit.php', 'product-variants.php'])) ?>">
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition <?= adminMenuItemClass(in_array($currentPage, ['products.php', 'product-create.php', 'product-edit.php', 'product-variants.php', 'variant-edit.php'])) ?>">
             <span>📦</span>
             <span>Products</span>
+        </a>
+
+        <a href="colors.php"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition <?= adminMenuItemClass($currentPage === 'colors.php') ?>">
+            <span>🎨</span>
+            <span>Colors</span>
         </a>
 
         <a href="#"
@@ -103,9 +109,15 @@ function adminMenuItemClass($active)
             </a>
 
             <a href="products.php"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition <?= adminMenuItemClass(in_array($currentPage, ['products.php', 'product-create.php', 'product-edit.php', 'product-variants.php'])) ?>">
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition <?= adminMenuItemClass(in_array($currentPage, ['products.php', 'product-create.php', 'product-edit.php', 'product-variants.php', 'variant-edit.php'])) ?>">
                 <span>📦</span>
                 <span>Products</span>
+            </a>
+
+            <a href="colors.php"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition <?= adminMenuItemClass($currentPage === 'colors.php') ?>">
+                <span>🎨</span>
+                <span>Colors</span>
             </a>
 
             <a href="../product.php"

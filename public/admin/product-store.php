@@ -15,6 +15,46 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+function uploadProductThumbnail($file)
+{
+    if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return '';
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception("Image upload failed.");
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+    if (!in_array($file['type'], $allowedTypes)) {
+        throw new Exception("Only JPG, PNG, WEBP and GIF images are allowed.");
+    }
+
+    $maxSize = 2 * 1024 * 1024;
+
+    if ($file['size'] > $maxSize) {
+        throw new Exception("Image size must be less than 2MB.");
+    }
+
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $fileName = 'product-' . time() . '-' . rand(1000, 9999) . '.' . strtolower($extension);
+
+    $uploadDir = __DIR__ . '/../../assets/images/products/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $destination = $uploadDir . $fileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new Exception("Failed to save uploaded image.");
+    }
+
+    return 'products/' . $fileName;
+}
+
 try {
     $title = trim($_POST['title'] ?? '');
     $slug = trim($_POST['slug'] ?? '');
@@ -26,10 +66,19 @@ try {
     if ($slug === '') {
         throw new Exception("Product slug is required.");
     }
+    $slug = strtolower($slug);
+
+    $productModel = new Product($conn);
+
+    if ($productModel->slugExists($slug)) {
+        throw new Exception("This product slug already exists. Please use another slug.");
+    }
+
+    $thumbnail = uploadProductThumbnail($_FILES['thumbnail'] ?? null);
 
     $data = [
         'title' => $title,
-        'slug' => strtolower($slug),
+        'slug' => $slug,        
         'price' => (float)($_POST['price'] ?? 0),
         'old_price' => (float)($_POST['old_price'] ?? 0),
         'sale_price' => (float)($_POST['sale_price'] ?? ($_POST['price'] ?? 0)),
@@ -42,7 +91,7 @@ try {
         'stock' => (int)($_POST['stock'] ?? 0),
         'rating' => (float)($_POST['rating'] ?? 0),
         'review_count' => (int)($_POST['review_count'] ?? 0),
-        'thumbnail' => trim($_POST['thumbnail'] ?? '')
+        'thumbnail' => $thumbnail
     ];
 
     if ($data['price'] <= 0) {
@@ -53,7 +102,6 @@ try {
         throw new Exception("Stock cannot be negative.");
     }
 
-    $productModel = new Product($conn);
     $productModel->createProduct($data);
 
     Flash::set('success', 'Product created successfully.');
