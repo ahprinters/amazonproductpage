@@ -259,4 +259,24 @@ class Variant
 
         return $stmt->execute();
     }
+
+    public function skuExists($sku, $excludeId = 0)
+    {
+        $excludeId = (int)$excludeId;
+
+        $stmt = $this->conn->prepare("
+            SELECT id
+            FROM product_variants
+            WHERE sku = ?
+            AND id != ?
+            LIMIT 1
+        ");
+
+        $stmt->bind_param("si", $sku, $excludeId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        return $result->num_rows > 0;
+    }
 }

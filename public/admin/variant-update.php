@@ -91,6 +91,12 @@ try {
         throw new Exception("SKU is required.");
     }
 
+    $sku = strtoupper($sku);
+
+    if ($variantModel->skuExists($sku, $variantId)) {
+        throw new Exception("This SKU already exists. Please use another SKU.");
+    }
+
     $price = (float)($_POST['price'] ?? 0);
     $oldPrice = (float)($_POST['old_price'] ?? 0);
     $stock = (int)($_POST['stock'] ?? 0);

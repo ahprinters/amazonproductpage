@@ -83,6 +83,14 @@ try {
         throw new Exception("SKU is required.");
     }
 
+    $sku = strtoupper($sku);
+
+    $variantModel = new Variant($conn);
+
+    if ($variantModel->skuExists($sku)) {
+        throw new Exception("This SKU already exists. Please use another SKU.");
+    }
+
     $price = (float)($_POST['price'] ?? 0);
     $oldPrice = (float)($_POST['old_price'] ?? 0);
     $stock = (int)($_POST['stock'] ?? 0);
@@ -110,7 +118,6 @@ try {
         'status' => $_POST['status'] ?? 'active'
     ];
 
-    $variantModel = new Variant($conn);
     $variantModel->createVariant($data);
 
     Flash::set('success', 'Product variant created successfully.');
